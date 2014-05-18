@@ -1,0 +1,29 @@
+---
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: Install software-properties-common
+  apt: name=software-properties-common state=latest
+
+- name: Install git
+  apt: name=git state=latest
+
+- name: Install build-essential
+  apt: name=build-essential state=latest
+
+- name: Disable password authentication
+  lineinfile: dest=/etc/ssh/sshd_config regexp="^PasswordAuthentication" line="PasswordAuthentication no"
+  notify: restart ssh
+
+- name: Create admin group
+  group: name=admin
+
+- name: Sudo without password for admin group
+  lineinfile: "dest=/etc/sudoers.d/admin create=yes line='%admin ALL=(ALL) NOPASSWD: ALL' regexp='^%admin'"
+
+- name: Create user
+  user: name={{railsbox_user}} groups=admin append=yes shell=/bin/bash
+
+- name: Add authorized keys to user
+  authorized_key: key="{{ item }}" user={{ railsbox_user }}
+  with_items: railsbox_authorized_keys
