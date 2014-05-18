@@ -4,4 +4,6 @@ galaxy_info:
   description: Installs base server image for railsbox.
   license: BSD
   min_ansible_version: 1.6
+  categories:
+    - system
 dependencies: []
